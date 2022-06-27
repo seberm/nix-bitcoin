@@ -252,7 +252,9 @@ in {
               chown ${cfg.macaroons.${macaroon}.user}: "$macaroonPath"
             '') (attrNames cfg.macaroons)}
           '';
-      } // nbLib.allowedIPAddresses cfg.tor.enforce;
+        } // nbLib.allowedIPAddresses cfg.tor.enforce // {
+          IPAddressAllow = [ "${bitcoindRpcAddress}/32" ];
+        };
     };
 
     users.users.${cfg.user} = {

@@ -155,7 +155,9 @@ in {
         Restart = "on-failure";
         RestartSec = "10s";
         ReadWritePaths = [ cfg.dataDir ];
-      } // nbLib.allowedIPAddresses cfg.tor.enforce;
+      } // nbLib.allowedIPAddresses cfg.tor.enforce // {
+        IPAddressAllow = [ "${config.services.bitcoind.rpc.address}/32" ];
+      };
       # Wait until the rpc socket appears
       postStart = ''
         while [[ ! -e ${cfg.networkDir}/lightning-rpc ]]; do
