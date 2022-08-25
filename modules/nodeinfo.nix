@@ -121,13 +121,17 @@ in {
     environment.systemPackages = optional cfg.enable script;
 
     nix-bitcoin.nodeinfo.services = with nodeinfoLib; {
-      bitcoind = mkInfo "";
+      bitcoind = mkInfo ''
+        #info["version"] = shell("bitcoin-cli getnetworkinfo | jq .version")
+      '';
       clightning = mkInfo ''
         info["nodeid"] = shell("lightning-cli getinfo | jq -r '.id'")
+        info["version"] = shell("lightning-cli getinfo | jq -r '.version'")
         if 'onion_address' in info:
             info["id"] = f"{info['nodeid']}@{info['onion_address']}"
       '';
       lnd = mkInfo ''
+        info["nodeid"] = shell("lncli getinfo | jq -r '.version'")
         info["nodeid"] = shell("lncli getinfo | jq -r '.identity_pubkey'")
       '';
       clightning-rest = mkInfo "";
