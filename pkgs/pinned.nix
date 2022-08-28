@@ -18,7 +18,9 @@ pkgs: pkgsUnstable:
     fulcrum
     hwi
     lnd
-    nbxplorer;
+    nbxplorer
+    teos
+    teos-watchtower-plugin;
 
   inherit pkgs pkgsUnstable;
 }
