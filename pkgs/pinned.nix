@@ -15,7 +15,9 @@ pkgs: pkgsUnstable:
     hwi
     lightning-loop
     lightning-pool
-    nbxplorer;
+    nbxplorer
+    teos
+    teos-watchtower-plugin;
 
   inherit pkgs pkgsUnstable;
 }
