@@ -300,6 +300,10 @@ in {
         connections = [ "bitcoind" ];
       };
       # id = 32 reserved for the upcoming mempool module
+      teos = {
+        id = 33;
+        connections = [ "bitcoind" ];
+      };
     };
 
     services.bitcoind = {
@@ -331,6 +335,12 @@ in {
     services.electrs.address = netns.electrs.address;
 
     services.fulcrum.address = netns.fulcrum.address;
+
+    services.teos = {
+      address = netns.teos.address;
+      api.address = netns.teos.address;
+      internalApi.address = netns.teos.address;
+    };
 
     services.spark-wallet = {
       address = netns.spark-wallet.address;
