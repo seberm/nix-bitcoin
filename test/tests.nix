@@ -277,7 +277,7 @@ let
       tests.regtest = true;
       test.data.num_blocks = 100;
 
-      services.bitcoind.regtest = true;
+      services.bitcoind.network = "regtest";
       systemd.services.bitcoind.postStart = mkAfter ''
         cli=${config.services.bitcoind.cli}/bin/bitcoin-cli
         if ! $cli listwallets | ${pkgs.jq}/bin/jq -e 'index("test")'; then

@@ -169,16 +169,20 @@ let
 
   bitcoind = config.services.bitcoind;
 
+  chain = getAttr bitcoind.network {
+    mainnet = "liquidv1";
+    regtest = "regtest";
+  };
+
   configFile = pkgs.writeText "elements.conf" ''
     # We're already logging via journald
     nodebuglogfile=1
 
     startupnotify=/run/current-system/systemd/bin/systemd-notify --ready
 
-    chain=${bitcoind.makeNetworkName "liquidv1" ''
-      regtest
-      [regtest]'' # Add [regtest] config section
-    }
+    chain=${chain}
+    ${optionalString (chain == "regtest") "[regtest]"}
+
     ${optionalString (cfg.dbCache != null) "dbcache=${toString cfg.dbCache}"}
     ${optionalString (cfg.prune != null) "prune=${toString cfg.prune}"}
     ${optionalString (cfg.validatepegin != null) "validatepegin=${if cfg.validatepegin then "1" else "0"}"}
@@ -237,7 +241,7 @@ in {
 
   config = mkIf cfg.enable {
     assertions = [
-      { assertion = bitcoind.regtest -> cfg.validatepegin != true;
+      { assertion = (bitcoind.network == "regtest") -> cfg.validatepegin != true;
         message = "liquidd: `validatepegin` is incompatible with regtest.";
       }
     ];

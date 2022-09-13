@@ -55,10 +55,15 @@ let
     bitcoind
     clightning;
 
+  network = getAttr bitcoind.network {
+    mainnet = "bitcoin";
+    regtest = "regtest";
+  };
+
   configFile = builtins.toFile "clightning-rest-config" (builtins.toJSON ({
     PORT = cfg.port;
     DOCPORT = cfg.docPort;
-    LNRPCPATH = "${clightning.dataDir}/${bitcoind.makeNetworkName "bitcoin" "regtest"}/lightning-rpc";
+    LNRPCPATH = "${clightning.dataDir}/${network}/lightning-rpc";
     EXECMODE = "production";
     PROTOCOL = "https";
     RPCCOMMANDS = ["*"];

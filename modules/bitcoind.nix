@@ -145,18 +145,12 @@ let
           }));
         };
       };
-      regtest = mkOption {
-        type = types.bool;
-        default = false;
-        description = "Enable regtest mode.";
-      };
       network = mkOption {
-        readOnly = true;
-        default = if cfg.regtest then "regtest" else "mainnet";
-      };
-      makeNetworkName = mkOption {
-        readOnly = true;
-        default = mainnet: regtest: if cfg.regtest then regtest else mainnet;
+        type = types.enum [ "mainnet" "regtest" ];
+        default = "mainnet";
+        description = ''
+          Bitcoin network type."
+        '';
       };
       proxy = mkOption {
         type = types.nullOr types.str;
@@ -288,9 +282,9 @@ let
 
     startupnotify=/run/current-system/systemd/bin/systemd-notify --ready
 
-    ${optionalString cfg.regtest ''
-      regtest=1
-      [regtest]
+    ${optionalString (cfg.network != "mainnet") ''
+      ${cfg.network}=1
+      [${cfg.network}]
     ''}
     ${optionalString (cfg.dbCache != null) "dbcache=${toString cfg.dbCache}"}
     prune=${toString cfg.prune}
@@ -413,7 +407,7 @@ in {
 
       # Enable RPC access for group
       postStart = ''
-        chmod g=r '${cfg.dataDir}/${optionalString cfg.regtest "regtest/"}.cookie'
+        chmod g=r '${cfg.dataDir}/${optionalString (cfg.network != "mainnet") "${cfg.network}/"}.cookie'
       '';
 
       serviceConfig = nbLib.defaultHardening // {

@@ -90,7 +90,10 @@ let
   inherit (config.services) clightning;
 
   secretsDir = config.nix-bitcoin.secretsDir;
-  network = config.services.bitcoind.makeNetworkName "bitcoin" "regtest";
+  network = buildins.getAttr {
+    mainnet = "bitcoin";
+    regtest = "regtest";
+  };
   user = clightning.user;
   group = clightning.group;
 

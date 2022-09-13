@@ -46,6 +46,11 @@ let
   nbLib = config.nix-bitcoin.lib;
   secretsDir = config.nix-bitcoin.secretsDir;
   bitcoind = config.services.bitcoind;
+
+  network = getAttr bitcoind.network {
+    mainnet = "bitcoin";
+    regtest = "regtest";
+  };
 in {
   inherit options;
 
@@ -79,7 +84,7 @@ in {
         ExecStart = ''
           ${config.nix-bitcoin.pkgs.electrs}/bin/electrs \
           --log-filters=INFO \
-          --network=${bitcoind.makeNetworkName "bitcoin" "regtest"} \
+          --network=${network} \
           --db-dir='${cfg.dataDir}' \
           --daemon-dir='${bitcoind.dataDir}' \
           --electrum-rpc-addr=${cfg.address}:${toString cfg.port} \

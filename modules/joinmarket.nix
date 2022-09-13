@@ -187,6 +187,17 @@ let
 
   # Based on https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/master/jmclient/jmclient/configure.py
   yg = cfg.yieldgenerator;
+  blockchain_source = getAttr bitcoind.network {
+    mainnet = "bitcoin-rpc";
+    regtest = "regtest";
+  };
+
+  network = getAttr bitcoind.network {
+    mainnet = "bitcoin-rpc";
+
+    # FIXME: Is it really a 'testnet'?
+    regtest = "testnet";
+  };
   configFile = builtins.toFile "config" ''
     [DAEMON]
     no_daemon = 0
@@ -195,8 +206,8 @@ let
     use_ssl = false
 
     [BLOCKCHAIN]
-    blockchain_source = ${bitcoind.makeNetworkName "bitcoin-rpc" "regtest"}
-    network = ${bitcoind.makeNetworkName "mainnet" "testnet"}
+    blockchain_source = ${blockchain_source}
+    network = ${network}
     rpc_host = ${nbLib.address bitcoind.rpc.address}
     rpc_port = ${toString bitcoind.rpc.port}
     rpc_user = ${bitcoind.rpc.users.privileged.name}
@@ -321,7 +332,7 @@ in {
             if ! output=$(${bitcoind.cli}/bin/bitcoin-cli -named createwallet \
                             wallet_name="${cfg.rpcWalletFile}" \
                             descriptors=false \
-                            ${optionalString (!bitcoind.regtest) "disable_private_keys=true"} 2>&1
+                            ${optionalString (bitcoind.network != "regtest") "disable_private_keys=true"} 2>&1
                          ); then
               # Ignore error if bitcoind wallet already exists
               if [[ $output != *"already exists"* ]]; then
