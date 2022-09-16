@@ -93,6 +93,7 @@ let
   network = buildins.getAttr {
     mainnet = "bitcoin";
     regtest = "regtest";
+    signet = "signet";
   };
   user = clightning.user;
   group = clightning.group;

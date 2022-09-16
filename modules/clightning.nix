@@ -105,6 +105,7 @@ let
   network = getAttr config.services.bitcoind.network {
     mainnet = "bitcoin";
     regtest = "regtest";
+    signet = "signet";
   };
   configFile = pkgs.writeText "config" ''
     network=${network}

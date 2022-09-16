@@ -146,7 +146,7 @@ let
         };
       };
       network = mkOption {
-        type = types.enum [ "mainnet" "regtest" ];
+        type = types.enum [ "mainnet" "regtest" "signet" ];
         default = "mainnet";
         description = ''
           Bitcoin network type."

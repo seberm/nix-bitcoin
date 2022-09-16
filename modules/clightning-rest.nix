@@ -58,6 +58,7 @@ let
   network = getAttr bitcoind.network {
     mainnet = "bitcoin";
     regtest = "regtest";
+    signet = "signet";
   };
 
   configFile = builtins.toFile "clightning-rest-config" (builtins.toJSON ({

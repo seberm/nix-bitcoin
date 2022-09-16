@@ -110,11 +110,13 @@ let
   nbExplorerCookieNetwork = getAttr bitcoind.network {
     mainnet = "Main";
     regtest = "RegTest";
+    #signet = "SigNet";
   };
 
   network = getAttr bitcoind.network {
     mainnet = "bitcoin";
     regtest = "regtest";
+    #signet = "signet";
   };
 in {
   inherit options;

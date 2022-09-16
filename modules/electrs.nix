@@ -50,6 +50,7 @@ let
   network = getAttr bitcoind.network {
     mainnet = "bitcoin";
     regtest = "regtest";
+    signet = "signet";
   };
 in {
   inherit options;
