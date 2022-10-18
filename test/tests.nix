@@ -51,6 +51,7 @@ let
         nbPkgs = config.nix-bitcoin.pkgs;
         pluginPkgs = nbPkgs.clightning-plugins // {
           clboss.path = "${nbPkgs.clboss}/bin/clboss";
+          teos-watchtower-plugin.path = "${nbPkgs.teos-watchtower-plugin}/bin/watchtower-client";
         };
       in map (plugin: pluginPkgs.${plugin}.path) enabled;
 
