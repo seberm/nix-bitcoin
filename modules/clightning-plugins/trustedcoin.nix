@@ -11,8 +11,8 @@ let cfg = config.services.clightning.plugins.trustedcoin; in
       defaultText = "config.nix-bitcoin.pkgs.trustedcoin";
       description = mdDoc ''
         The package providing trustedcoin binaries. The trustedcoin will try to
-        use a bitcoind as a trusted source for getting block data. If this
-        fails, it will use a trustedcoin providers instead.
+        use a bitcoind as a main trusted source for getting on-chain block
+        data. If this fails, it will use a trustedcoin providers instead.
       '';
     };
   };
@@ -20,6 +20,7 @@ let cfg = config.services.clightning.plugins.trustedcoin; in
   config = mkIf cfg.enable {
     services.clightning.extraConfig = ''
       plugin=${cfg.package}/bin/trustedcoin
+      disable-plugin=bcli
     '';
   };
 }
