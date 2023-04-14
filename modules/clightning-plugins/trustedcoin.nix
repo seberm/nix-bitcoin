@@ -20,9 +20,9 @@ let cfg = config.services.clightning.plugins.trustedcoin; in
     '';
 
     # Trustedcoin does not honor the clightning's proxy configuration.
-    systemd.services.clightning.environment = mkIf (config.services.clightning.proxy != null) {
-      HTTPS_PROXY = "socks5://${config.services.clightning.proxy}";
-    };
     # Ref.: https://github.com/nbd-wtf/trustedcoin/pull/19
+    #systemd.services.clightning.environment = mkIf (config.services.clightning.proxy != null) {
+    #  HTTPS_PROXY = "socks5://${config.services.clightning.proxy}";
+    #};
   };
 }
