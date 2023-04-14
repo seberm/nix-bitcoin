@@ -10,7 +10,7 @@ buildGoModule rec {
     #rev = "v${version}";
     rev = "feature/add-proxy-support";
     #sha256 = "sha256-UNQjxhAT0mK1In7vUtIoMoMNBV+0wkrwbDmm7m+0R3o=";
-    sha256 = "";
+    sha256 = "sha256-wY+WAqZ2u59lR5rvalUefLilhLkeKhGHZlZrQD08TTU=";
   };
 
   vendorSha256 = "sha256-xvkK9rMQlXTnNyOMd79qxVSvhgPobcBk9cq4/YWbupY=";
