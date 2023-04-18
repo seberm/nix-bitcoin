@@ -4,6 +4,7 @@ task:
     # Save some traffic by excluding the full git history
     CIRRUS_CLONE_DEPTH: 1
 
+
   # Use the maximum timeout. Needed when rebuilding packages on a channel update.
   timeout_in: 120m
 
