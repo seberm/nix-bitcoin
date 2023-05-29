@@ -24,7 +24,6 @@ in {
     (mkRenamedOptionModule [ "services" "bitcoind" "rpcthreads" ] [ "services" "bitcoind" "rpc" "threads" ])
     (mkRenamedOptionModule [ "services" "clightning" "bind-addr" ] [ "services" "clightning" "address" ])
     (mkRenamedOptionModule [ "services" "clightning" "bindport" ] [ "services" "clightning" "port" ])
-    (mkRenamedOptionModule [ "services" "spark-wallet" "host" ] [ "services" "spark-wallet" "address" ])
     (mkRenamedOptionModule [ "services" "lnd" "rpclisten" ] [ "services" "lnd" "rpcAddress" ])
     (mkRenamedOptionModule [ "services" "lnd" "listen" ] [ "services" "lnd" "address" ])
     (mkRenamedOptionModule [ "services" "lnd" "listenPort" ] [ "services" "lnd" "port" ])
@@ -97,8 +96,20 @@ in {
       '')
       (mkRemovedOptionModule (optionName ++ [ "readers" ]) "")
       (mkRemovedOptionModule (optionName ++ [ "writers" ]) "")
-  ]);
-
+  ]) ++
+  # 0.0.92
+  ([
+    (mkRemovedOptionModule [ "services" "spark-wallet" "enable" ] ''
+        Spark Lightning Wallet is unmaintained and incompatible with clightning
+        23.05. Therefore, the spark-wallet module has been removed from
+        nix-bitcoin. For a replacement, consider using the rtl (Ride The
+        Lightning) module or the clightning-rest module in combination with the
+        Zeus mobile wallet.
+      '')
+    ] ++ map
+         (attr: mkRemovedOptionModule ([ "services" "spark-wallet" ] ++ [attr]) "")
+         [ "port" "address" "extraArgs" "getPublicAddressCmd" "user" "group" "tor" ]
+  );
   config = {
     # Migrate old clightning-rest datadir from nix-bitcoin versions < 0.0.70
     systemd.services.clightning-rest-migrate-datadir = let

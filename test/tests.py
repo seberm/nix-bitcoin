@@ -251,13 +251,6 @@ def _():
         log_has_string("clightning-rest", "cl-rest api server is ready and listening")
     )
 
-@test("spark-wallet")
-def _():
-    assert_running("spark-wallet")
-    wait_for_open_port(ip("spark-wallet"), 9737)
-    spark_auth = re.search("login=(.*)", succeed("cat /secrets/spark-wallet-login"))[1]
-    assert_matches(f"curl -fsS {spark_auth}@{ip('spark-wallet')}:9737", "Spark")
-
 @test("joinmarket")
 def _():
     assert_running("joinmarket")
