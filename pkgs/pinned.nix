@@ -15,6 +15,7 @@ pkgs: pkgsUnstable:
     hwi
     lightning-loop
     lightning-pool
+    lnd
     nbxplorer;
 
   inherit pkgs pkgsUnstable;
