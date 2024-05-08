@@ -65,7 +65,6 @@ let
       add_header Cache-Control "public, no-transform";
       add_header Vary Accept-Language;
       add_header Vary Cookie;
-
     '';
 
     proxyApi = let
