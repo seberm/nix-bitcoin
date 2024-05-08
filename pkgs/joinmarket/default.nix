@@ -45,6 +45,7 @@ stdenv.mkDerivation {
     cpBin genwallet.py
     cpBin bond-calculator.py
     cpBin jmwalletd.py
+    cpBin bond-calculator.py
 
     chmod +x -R "$out/bin"
     patchShebangs "$out/bin"
