@@ -137,6 +137,7 @@ let
           enable = config.services.joinmarket.enable;
         };
       };
+      tests.joinmarket-jam = cfg.joinmarket-jam.enable;
 
       tests.nodeinfo = config.nix-bitcoin.nodeinfo.enable;
 
@@ -211,6 +212,7 @@ let
       services.btcpayserver.enable = true;
       services.joinmarket.enable = true;
       services.joinmarket-ob-watcher.enable = true;
+      services.joinmarket-jam.enable = true;
       services.backups.enable = true;
 
       nix-bitcoin.nodeinfo.enable = true;

@@ -148,6 +148,7 @@ in {
       btcpayserver = mkInfo "";
       liquidd = mkInfo "";
       joinmarket-ob-watcher = mkInfo "";
+      joinmarket-jam = mkInfo "";
       rtl = mkInfo "";
       mempool = mkInfo "";
       mempool-frontend = name: cfg: mkInfoLong {

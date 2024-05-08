@@ -40,6 +40,24 @@ let
       default = "/var/lib/joinmarket";
       description = mdDoc "The data directory for JoinMarket.";
     };
+    max_cj_fee_abs = mkOption {
+      type = types.ints.unsigned;
+      default = 30000;  # in sats
+      description = mdDoc ''
+        Maximum absolute coinjoin fee in satoshi to pay to a single market
+        maker for a transaction.
+      '';
+    };
+    max_cj_fee_rel = mkOption {
+      type = types.float;
+      default = 0.0003;  # 0.03 %
+      description = mdDoc ''
+        Maximum relative coinjoin fee, in fractions of the coinjoin value e.g.
+        if your coinjoin amount is 2 btc (200 million satoshi) and
+        max_cj_fee_rel = 0.001 (0.1%), the maximum fee allowed would be 0.002
+        btc (200 thousand satoshi).
+      '';
+    };
     rpcWalletFile = mkOption {
       type = types.nullOr types.str;
       default = "jm_wallet";
@@ -134,6 +152,15 @@ let
 
     jmwalletd = {
       enable = mkEnableOption "JoinMarket jmwalletd";
+
+      # TODO: The jmwalletd does not support setting bind IP. This is just internal option used by other modules.
+      address = mkOption {
+        internal = true;
+        readOnly = true;
+        type = types.str;
+        default = "0.0.0.0";
+        description = mdDoc "Address to listen for connections.";
+      };
       port = mkOption {
         type = types.port;
         default = 28183;
@@ -273,6 +300,8 @@ let
     tx_fees_factor = 0.2
     absurd_fee_per_kb = 350000
     max_sweep_fee_change = 0.8
+    max_cj_fee_abs = ${toString cfg.max_cj_fee_abs}
+    max_cj_fee_rel = ${toString cfg.max_cj_fee_rel}
     tx_broadcast = self
     minimum_makers = 4
     max_sats_freeze_reuse = -1

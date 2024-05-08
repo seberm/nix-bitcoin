@@ -289,6 +289,11 @@ def _():
     wait_for_open_port(ip("joinmarket"), 28183)  # RPC port
     wait_for_open_port(ip("joinmarket"), 28283)  # Websocket port
 
+@test("joinmarket-jam")
+def _():
+    assert_running("joinmarket-jam")
+    #machine.wait_until_succeeds(log_has_string("joinmarket-jam", "TODO"))
+
 @test("nodeinfo")
 def _():
     status, _ = machine.execute("systemctl is-enabled --quiet onion-addresses 2> /dev/null")
