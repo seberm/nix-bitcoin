@@ -131,6 +131,62 @@ let
         '';
       };
     };
+
+    jmwalletd = {
+      enable = mkEnableOption "JoinMarket jmwalletd";
+      port = mkOption {
+        type = types.port;
+        default = 28183;
+        description = mdDoc "The port over which to serve RPC.";
+      };
+      wssPort = mkOption {
+        type = types.port;
+        default = 28283;
+        description = mdDoc "The port over which to serve websocket subscriptions";
+      };
+      extraArgs = mkOption {
+        type = types.separatedString " ";
+        default = "";
+        description = mdDoc "Extra coomand line arguments passed to jmwalletd";
+      };
+      dataDir = mkOption {
+        readOnly = true;
+        type = types.path;
+        default = cfg.dataDir;
+        description = mdDoc "The data directory for JoinMarket's jmwalled.";
+      };
+      certPath = mkOption {
+        readOnly = true;
+        default = "${secretsDir}/jm-jmwalletd";
+        description = mdDoc "JoinMarket jmwalletd TLS certificate path.";
+      };
+      recoverSync = mkOption {
+        type = types.bool;
+        default = false;
+        description = mdDoc ''
+          Choose to do detailed wallet sync, used for recovering on new Core
+          instance.
+        '';
+      };
+      certificate = {
+        extraIPs = mkOption {
+          type = with types; listOf str;
+          default = [];
+          example = [ "60.100.0.1" ];
+          description = mdDoc ''
+            Extra `subjectAltName` IPs added to the certificate.
+          '';
+        };
+        extraDomains = mkOption {
+          type = with types; listOf str;
+          default = [];
+          example = [ "example.com" ];
+          description = mdDoc ''
+            Extra `subjectAltName` domain names added to the certificate.
+          '';
+        };
+      };
+    };
   };
 
   cfg = config.services.joinmarket;
@@ -387,6 +443,45 @@ in {
       makePasswordSecret jm-wallet-password
     '';
   }
+
+  (mkIf cfg.jmwalletd.enable {
+    nix-bitcoin.secrets.jm-jmwalletd-cert.user = cfg.user;
+    nix-bitcoin.secrets.jm-jmwalletd-key.user = cfg.user;
+    nix-bitcoin.generateSecretsCmds.joinmarket = ''
+      makeCert jm-jmwalletd '${nbLib.mkCertExtraAltNames cfg.jmwalletd.certificate}'
+    '';
+
+    systemd.services.joinmarket-jmwalletd = let
+      jmwalletd_ssl_dir = "${cfg.jmwalletd.dataDir}/ssl";
+    in{
+      wantedBy = [ "joinmarket.service" ];
+      requires = [ "joinmarket.service" ];
+      after = [ "joinmarket.service" "nix-bitcoin-secrets.target" ];
+      preStart = ''
+        # Copy the certificates into a data directory under the `ssl` dir
+        mkdir -p '${jmwalletd_ssl_dir}'
+        install -m600 '${cfg.jmwalletd.certPath}-cert' '${jmwalletd_ssl_dir}/cert.pem'
+        install -m600 '${cfg.jmwalletd.certPath}-key' '${jmwalletd_ssl_dir}/key.pem'
+      '';
+      serviceConfig = nbLib.defaultHardening // {
+        WorkingDirectory = cfg.dataDir;
+        User = cfg.user;
+        ExecStart = ''
+          ${config.nix-bitcoin.pkgs.joinmarket}/bin/jm-jmwalletd \
+          --port='${toString cfg.jmwalletd.port}' \
+          --wss-port='${toString cfg.jmwalletd.wssPort}' \
+          --datadir='${cfg.jmwalletd.dataDir}' \
+          ${optionalString (cfg.jmwalletd.recoverSync) "--recoversync \\"}
+          ${cfg.jmwalletd.extraArgs}
+        '';
+        SyslogIdentifier = "joinmarket-jmwalletd";
+        ReadWritePaths = [ cfg.dataDir ];
+        Restart = "on-failure";
+        RestartSec = "10s";
+        MemoryDenyWriteExecute = false;
+      } // nbLib.allowTor;
+    };
+  })
 
   (mkIf cfg.yieldgenerator.enable {
     systemd.services.joinmarket-yieldgenerator = {

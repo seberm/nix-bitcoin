@@ -122,14 +122,20 @@ let
 
       tests.joinmarket = cfg.joinmarket.enable;
       tests.joinmarket-yieldgenerator = cfg.joinmarket.yieldgenerator.enable;
+      tests.joinmarket-jmwalletd = cfg.joinmarket.jmwalletd.enable;
       tests.joinmarket-ob-watcher = cfg.joinmarket-ob-watcher.enable;
-      services.joinmarket.yieldgenerator = {
-        enable = config.services.joinmarket.enable;
-        # Test a smattering of custom parameters
-        ordertype = "absoffer";
-        cjfee_a = 300;
-        cjfee_r = 0.00003;
-        txfee = 200;
+      services.joinmarket = {
+        yieldgenerator = {
+          enable = config.services.joinmarket.enable;
+          # Test a smattering of custom parameters
+          ordertype = "absoffer";
+          cjfee_a = 300;
+          cjfee_r = 0.00003;
+          txfee = 200;
+        };
+        jmwalletd = {
+          enable = config.services.joinmarket.enable;
+        };
       };
 
       tests.nodeinfo = config.nix-bitcoin.nodeinfo.enable;
