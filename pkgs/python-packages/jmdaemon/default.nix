@@ -1,12 +1,18 @@
-{ version, src, lib, buildPythonPackageWithDepsCheck, fetchurl, txtorcon, cryptography, pyopenssl, libnacl, joinmarketbase }:
+{ version, src, format, lib, buildPythonPackageWithDepsCheck, fetchurl, txtorcon, cryptography, pyopenssl, libnacl, joinmarketbase }:
 
 buildPythonPackageWithDepsCheck rec {
   pname = "joinmarketdaemon";
-  inherit version src;
+  inherit version src format;
 
-  postUnpack = "sourceRoot=$sourceRoot/jmdaemon";
+  #postUnpack = "sourceRoot=$sourceRoot/src/jmdaemon";
 
-  propagatedBuildInputs = [ txtorcon cryptography pyopenssl libnacl joinmarketbase ];
+  propagatedBuildInputs = [
+    txtorcon
+    cryptography
+    pyopenssl
+    libnacl
+    joinmarketbase
+  ];
 
   patchPhase = ''
     substituteInPlace setup.py \

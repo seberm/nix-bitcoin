@@ -1,9 +1,9 @@
 {
-  pipBuildHook
-, version
+  version
 , src
+, format
 , lib
-, buildPythonPackageWithDepsCheck
+, buildPythonPackage
 , argon2_cffi
 , autobahn
 , bencoderpyx
@@ -19,11 +19,13 @@
 , werkzeug
 }:
 
-buildPythonPackageWithDepsCheck rec {
+buildPythonPackage rec {
   pname = "joinmarketclient";
-  inherit version src;
+  inherit version src format;
 
-  postUnpack = "sourceRoot=$sourceRoot/jmclient";
+  #nativeBuildInputs = [
+  #  setuptools
+  #];
 
   propagatedBuildInputs = [
     argon2_cffi
@@ -40,16 +42,16 @@ buildPythonPackageWithDepsCheck rec {
     werkzeug
   ];
 
-  patchPhase = ''
-    substituteInPlace setup.py \
-      --replace "'klein==20.6.0'" "'klein>=20.6.0'"
-    substituteInPlace setup.py \
-      --replace "'argon2_cffi==21.3.0'" "'argon2_cffi==23.1.0'"
-    substituteInPlace setup.py \
-      --replace "'pyjwt==2.4.0'" "'pyjwt==2.8.0'"
-    substituteInPlace setup.py \
-      --replace "'werkzeug==2.2.3'" "'werkzeug==2.3.8'"
-  '';
+  #patchPhase = ''
+  #  substituteInPlace setup.py \
+  #    --replace "'klein==20.6.0'" "'klein>=20.6.0'"
+  #  substituteInPlace setup.py \
+  #    --replace "'argon2_cffi==21.3.0'" "'argon2_cffi==23.1.0'"
+  #  substituteInPlace setup.py \
+  #    --replace "'pyjwt==2.4.0'" "'pyjwt==2.8.0'"
+  #  substituteInPlace setup.py \
+  #    --replace "'werkzeug==2.2.3'" "'werkzeug==2.3.8'"
+  #'';
 
   # The unit tests can't be run in a Nix build environment
   doCheck = false;
@@ -61,7 +63,7 @@ buildPythonPackageWithDepsCheck rec {
   meta = with lib; {
     description = "Client library for Bitcoin coinjoins";
     homepage = "https://github.com/Joinmarket-Org/joinmarket-clientserver";
-    maintainers = with maintainers; [ nixbitcoin ];
+    maintainers = with maintainers; [ seberm ];
     license = licenses.gpl3;
   };
 }

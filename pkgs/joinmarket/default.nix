@@ -1,12 +1,12 @@
 { stdenv, lib, fetchFromGitHub, python3, nbPython3PackagesJoinmarket }:
 
 let
-  version = "0.9.10";
+  version = "0.9.11";
   src = fetchFromGitHub {
     owner = "joinmarket-org";
     repo = "joinmarket-clientserver";
     rev = "v${version}";
-    hash = "sha256-uNweI7VKC16CFn8MNOAvadcSnTjK/Fznfy4qctM5PR8=";
+    hash = "sha256-sYHhhp9BZz8udJuVAfwdt474OQPiye2ae5DOn5v5yEQ=";
   };
 
   runtimePackages = with nbPython3PackagesJoinmarket; [
@@ -21,6 +21,7 @@ let
 in
 stdenv.mkDerivation {
   pname = "joinmarket";
+  format = "pyproject";
   inherit version src;
 
   buildInputs = [ pythonEnv ];
@@ -61,7 +62,7 @@ stdenv.mkDerivation {
     description = "Bitcoin CoinJoin implementation";
     homepage = "https://github.com/JoinMarket-Org/joinmarket-clientserver";
     license = licenses.gpl3Only;
-    maintainers = with maintainers; [ nixbitcoin ];
+    maintainers = with maintainers; [ seberm ];
     platforms = platforms.unix;
   };
 }

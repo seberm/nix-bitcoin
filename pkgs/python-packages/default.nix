@@ -3,7 +3,7 @@ rec {
   pyPkgsOverrides = self: super: let
     inherit (self) callPackage;
     clightningPkg = pkg: callPackage pkg { inherit (nbPkgs.pinned) clightning; };
-    joinmarketPkg = pkg: callPackage pkg { inherit (nbPkgs.joinmarket) version src; };
+    joinmarketPkg = pkg: callPackage pkg { inherit (nbPkgs.joinmarket) version src format; };
   in
     {
       txzmq = callPackage ./txzmq {};
@@ -25,6 +25,8 @@ rec {
       joinmarketbitcoin = joinmarketPkg ./jmbitcoin;
       joinmarketdaemon = joinmarketPkg ./jmdaemon;
 
+      # TODO: add jmqtui? - https://github.com/JoinMarket-Org/joinmarket-clientserver/blob/v0.9.11/pyproject.toml#L37
+
       ## Specific versions of packages that already exist in nixpkgs
 
       # autobahn 20.12.3, required by joinmarketclient
@@ -35,6 +37,8 @@ rec {
       # This was the case for NixOS <= 23.05.
       # TODO-EXTERNAL: Remove when this is resolved:
       # https://github.com/NixOS/nixpkgs/issues/253131
+
+      # TODO: issue closed? check if this can be removed
       buildPythonPackageWithDepsCheck = attrs:
         self.buildPythonPackage (attrs // {
           dontUsePypaInstall = true;
