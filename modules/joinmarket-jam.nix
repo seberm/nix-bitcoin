@@ -54,17 +54,18 @@ let
   nbPkgs = config.nix-bitcoin.pkgs;
 
   inherit (config.services) joinmarket joinmarket-ob-watcher;
-
   # Nginx configuration is highgly inspired by official jam-docker ui-only container.
   # Ref.:
   # - https://github.com/joinmarket-webui/jam-docker/tree/master/ui-only/nginx
   nginxConfig = {
+    # Ref.: https://github.com/joinmarket-webui/jam-docker/tree/master/ui-only/nginx
     staticContent = ''
       index index.html;
 
       add_header Cache-Control "public, no-transform";
       add_header Vary Accept-Language;
       add_header Vary Cookie;
+
     '';
 
     proxyApi = let

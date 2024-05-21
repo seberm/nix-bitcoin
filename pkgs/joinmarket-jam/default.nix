@@ -11,9 +11,7 @@ buildNpmPackage rec {
   src = fetchFromGitHub {
     owner = "joinmarket-webui";
     repo = pname;
-    #repo = "jam";
     rev = "v${version}";
-    #rev = "v0.2.0";
     hash = "sha256-H5g29UJv3+B92m5Fcpa46+81992jKw1Tno2NkGQ7NRM=";
   };
 
