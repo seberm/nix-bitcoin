@@ -13,7 +13,7 @@ let
   test = makeTestVM {
     inherit name;
 
-    nodes.machine = { config, ... }: {
+    nodes.machine = { ... }: {
       imports = [
         testConfig
         commonVmConfig

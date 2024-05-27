@@ -1,9 +1,9 @@
-{ pkgs, lib, scenarios, nix-bitcoin }:
+{ lib, scenarios, nix-bitcoin }:
 with lib;
 rec {
   # For more examples, see `scenarios` and `exampleScenarios` in ./src/test/tests.nix
 
-  template = { config, pkgs, lib, ... }: {
+  template = { ... }: {
     imports = [
       (nix-bitcoin + "/modules/presets/secure-node.nix")
       scenarios.netnsBase
@@ -13,7 +13,7 @@ rec {
     test.container.exposeLocalhost = true;
   };
 
-  myscenario = { config, pkgs, lib, ... }: {
+  myscenario = { ... }: {
     services.clightning.enable = true;
     nix-bitcoin.nodeinfo.enable = true;
   };

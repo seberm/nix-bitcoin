@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, lib, ... }:
 
 # Workflow for releasing a new nix-bitcoin version with incompatible changes:
 # Let V be the version of the upcoming, incompatible release.

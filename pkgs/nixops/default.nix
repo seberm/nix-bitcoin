@@ -2,7 +2,7 @@
 # 19.09 demands a suitable base image (defined in nixops-vbox/nix/virtualbox.nix) to
 # start the virtualbox guest service during system activation.
 
-{ pkgs, stdenv, runCommand, fetchFromGitHub }:
+{ pkgs, runCommand, fetchFromGitHub }:
 
 let
   pluginData = {

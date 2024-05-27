@@ -6,7 +6,6 @@
 , pythonAtLeast
 , pytestCheckHook
 , setuptools
-, fetchurl
 , chromalog
 , cryptography
 , service-identity

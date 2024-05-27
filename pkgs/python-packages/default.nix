@@ -1,6 +1,6 @@
 nbPkgs: python3:
 rec {
-  pyPkgsOverrides = self: super: let
+  pyPkgsOverrides = self: _super: let
     inherit (self) callPackage;
     clightningPkg = pkg: callPackage pkg { inherit (nbPkgs.pinned) clightning; };
   in

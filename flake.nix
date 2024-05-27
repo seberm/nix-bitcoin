@@ -43,7 +43,7 @@
         inherit supportedSystems;
       };
 
-      overlays.default = final: prev: let
+      overlays.default = final: _prev: let
         nbPkgs = self.lib.mkNbPkgs { inherit (final) system; pkgs = final; };
       in removeAttrs nbPkgs [ "pinned" "nixops19_09" "krops" ];
 

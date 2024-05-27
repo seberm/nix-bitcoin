@@ -156,7 +156,7 @@ in {
         extraCode = "";
       };
       # Only add sshd when it has an onion service
-      sshd = name: cfg: mkIfOnionPort "sshd" (onionPort: ''
+      sshd = _name: _cfg: mkIfOnionPort "sshd" (onionPort: ''
         add_service("sshd", """info["onion_address"] = get_onion_address("sshd", ${onionPort})""")
       '');
     };

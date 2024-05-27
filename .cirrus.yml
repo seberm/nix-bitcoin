@@ -40,3 +40,7 @@ task:
     - name: shellcheck
       build_script:
         - ./test/shellcheck.sh
+
+    - name: deadnix
+      build_script:
+        - nix shell --inputs-from . nixpkgs#{bash,coreutils,cachix} github:astro/deadnix -c ./test/deadnix.sh

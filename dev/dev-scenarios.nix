@@ -25,7 +25,7 @@ with lib;
     test.container.enableWAN = true;
   };
 
-  rtl-dev = { config, pkgs, lib, ... }: {
+  rtl-dev = { ... }: {
     imports = [
       # scenarios.netnsBase
       # scenarios.regtestBase
@@ -46,7 +46,7 @@ with lib;
     # test.container.enableWAN = true;
   };
 
-  wireguard-lndconnect-online = { config, pkgs, lib, ... }: {
+  wireguard-lndconnect-online = { ... }: {
     imports = [
       ../modules/presets/wireguard.nix
       scenarios.regtestBase

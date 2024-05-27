@@ -1,1 +1,1 @@
-self: super: import ./pkgs { pkgs = super; }
+_self: super: import ./pkgs { pkgs = super; }

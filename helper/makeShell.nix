@@ -1,4 +1,4 @@
-{ configDir, shellVersion ? null, extraShellInitCmds ? (pkgs: "") }:
+{ configDir, extraShellInitCmds ? (_pkgs: "") }:
 let
   pinned = import ../pkgs/nixpkgs-pinned.nix;
   pkgs = import nixpkgs { config = {}; overlays = []; };

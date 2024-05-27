@@ -4,7 +4,7 @@
 #
 # See it in use at ./presets/enable-tor.nix
 
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 
 with lib;
 let
@@ -79,7 +79,7 @@ in {
       };
       systemd.services = let
         onionAddresses = [ "onion-addresses.service" ];
-      in genAttrs publicServices (service: {
+      in genAttrs publicServices (_service: {
         # TODO-EXTERNAL: Instead of `wants`, use a future systemd dependency type
         # that propagates initial start failures but no restarts
         wants = onionAddresses;

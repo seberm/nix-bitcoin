@@ -3,9 +3,7 @@
 , nodejs-18_x
 , nodejs-slim-18_x
 , fetchNodeModules
-, fetchpatch
 , fetchurl
-, applyPatches
 , makeWrapper
 }:
 let self = stdenvNoCC.mkDerivation {

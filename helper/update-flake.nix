@@ -12,7 +12,7 @@ in rec {
   # identical to the unstable version.
   versions = let
     pinned = flake.legacyPackages.x86_64-linux.pinned;
-    pinnedPkgs = lib.filterAttrs (n: v: lib.isDerivation v) pinned;
+    pinnedPkgs = lib.filterAttrs (_n: v: lib.isDerivation v) pinned;
     stable = pinned.pkgs;
     unstable = pinned.pkgsUnstable;
     isStable = builtins.partition (pkgName:

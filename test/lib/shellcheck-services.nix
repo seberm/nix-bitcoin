@@ -1,4 +1,4 @@
-{ config, pkgs, lib, extendModules, ... }@args:
+{ config, pkgs, lib, ... }@args:
 with lib;
 let
   options.test.shellcheckServices = {

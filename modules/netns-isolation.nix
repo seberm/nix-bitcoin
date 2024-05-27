@@ -78,7 +78,7 @@ let
   #
   availableNetns = let
     # base = { clightning = [ "bitcoind" ]; ... }
-    base = builtins.mapAttrs (n: v:
+    base = builtins.mapAttrs (_n: v:
       builtins.filter isEnabled v.connections
     ) enabledServices;
   in
@@ -88,7 +88,7 @@ let
       ) xs cfg.services.${s1}.connections
     ) base (builtins.attrNames base);
 
-  enabledServices = filterAttrs (n: v: isEnabled n) cfg.services;
+  enabledServices = filterAttrs (n: _v: isEnabled n) cfg.services;
   isEnabled = x: config.services.${x}.enable;
 
   ip = "${pkgs.iproute}/bin/ip";

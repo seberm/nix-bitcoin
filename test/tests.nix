@@ -267,7 +267,7 @@ let
 
       # Patch clightning to increase the plugin init timeout.
       # Otherwise this test can fail on slower hardware.
-      nix-bitcoin.pkgOverlays = super: self: {
+      nix-bitcoin.pkgOverlays = super: _self: {
         clightning = super.clightning.overrideAttrs (old: {
           postPatch = old.postPatch + ''
             substituteInPlace lightningd/plugin.c \

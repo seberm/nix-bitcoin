@@ -5,9 +5,7 @@
 
 { src
 , hash ? ""
-, runScripts ? false
 , preferLocalBuild ? true
-, npmFlags ? ""
 , ...
 } @ args:
 stdenvNoCC.mkDerivation ({
