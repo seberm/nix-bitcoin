@@ -40,3 +40,7 @@ task:
     - name: shellcheck
       build_script:
         - ./test/shellcheck.sh
+
+    - name: pylint
+      build_script:
+        - ./test/pylint.sh
