@@ -1,6 +1,15 @@
+# pylint: disable=line-too-long, missing-function-docstring, broad-exception-raised, undefined-variable
+
+"""
+Module which provides an automation of integration testing.
+
+For more info, please see [NixOS Tests](https://nixos.org/manual/nixos/stable/index.html#sec-nixos-tests).
+"""
+
 from collections import OrderedDict
 import json
 import re
+
 
 def succeed(*cmds):
     """Returns the concatenated output of all cmds"""
@@ -9,8 +18,8 @@ def succeed(*cmds):
 def assert_matches(cmd, regexp):
     assert_str_matches(succeed(cmd), regexp)
 
-def assert_str_matches(str, regexp):
-    if not re.search(regexp, str):
+def assert_str_matches(value, regexp):
+    if not re.search(regexp, value):
         raise Exception(f"Pattern '{regexp}' not found in '{str}'")
 
 def assert_full_match(cmd, regexp):
@@ -18,8 +27,8 @@ def assert_full_match(cmd, regexp):
     if not re.fullmatch(regexp, out):
         raise Exception(f"Pattern '{regexp}' doesn't match '{out}'")
 
-def log_has_string(unit, str):
-    return f"journalctl -b --output=cat -u {unit} --grep='{str}'"
+def log_has_string(unit, value):
+    return f"journalctl -b --output=cat -u {unit} --grep='{value}'"
 
 def assert_no_failure(unit):
     """Unit should not have failed since the system is running"""
@@ -41,30 +50,30 @@ def wait_for_open_port(address, port):
 
 ### Test runner
 
-tests = OrderedDict()
+test_functions = OrderedDict()
 
 def test(name):
-    def x(fn):
-        tests[name] = fn
-    return x
+    def _(fn_name):
+        test_functions[name] = fn_name
+    return _
 
 # `run_tests` is already defined by the NixOS test driver
 def nb_run_tests():
     enabled = enabled_tests.copy()
     to_run = []
-    for test in tests:
-        if test in enabled:
-            enabled.remove(test)
-            to_run.append(test)
+    for test_name in test_functions:
+        if test_name in enabled:
+            enabled.remove(test_name)
+            to_run.append(test_name)
     if enabled:
         raise RuntimeError(f"The following tests are enabled but not defined: {enabled}")
     machine.connect()  # Visually separate boot output from the test output
-    for test in to_run:
-        with machine.nested(f"test: {test}"):
-            tests[test]()
+    for test_name in to_run:
+        with machine.nested(f"test: {test_name}"):
+            test_functions[test_name]()
 
-def run_test(test):
-    tests[test]()
+def run_test(test_name):
+    test_functions[test_name]()
 
 
 ### Tests
@@ -106,7 +115,7 @@ def _():
 @test("electrs")
 def _():
     assert_running("electrs")
-    wait_for_open_port(ip("electrs"), 4224)  # prometeus metrics provider
+    wait_for_open_port(get_ip("electrs"), 4224)  # prometeus metrics provider
     # Check RPC connection to bitcoind
     if not "regtest" in enabled_tests:
         machine.wait_until_succeeds(
@@ -222,20 +231,20 @@ def _():
     machine.wait_until_succeeds(log_has_string("nbxplorer", "BTC: RPC connection successful"))
     if test_data["btcpayserver-lbtc"]:
         machine.wait_until_succeeds(log_has_string("nbxplorer", "LBTC: RPC connection successful"))
-    wait_for_open_port(ip("nbxplorer"), 24444)
+    wait_for_open_port(get_ip("nbxplorer"), 24444)
 
     assert_running("btcpayserver")
     machine.wait_until_succeeds(log_has_string("btcpayserver", "Now listening on"))
-    wait_for_open_port(ip("btcpayserver"), 23000)
+    wait_for_open_port(get_ip("btcpayserver"), 23000)
     # test lnd custom macaroon
     assert_matches(
         "runuser -u btcpayserver -- curl -fsS --cacert /secrets/lnd-cert "
         '--header "Grpc-Metadata-macaroon: $(xxd -ps -u -c 1000 /run/lnd/btcpayserver.macaroon)" '
-        f"-X GET https://{ip('lnd')}:8080/v1/getinfo | jq",
+        f"-X GET https://{get_ip('lnd')}:8080/v1/getinfo | jq",
         '"version"',
     )
     # Test web server response
-    assert_matches(f"curl -fsS -L {ip('btcpayserver')}:23000", "Welcome to your BTCPay&#xA0;Server")
+    assert_matches(f"curl -fsS -L {get_ip('btcpayserver')}:23000", "Welcome to your BTCPay&#xA0;Server")
 
 @test("rtl")
 def _():
@@ -258,7 +267,7 @@ def _():
     machine.wait_until_succeeds(
         log_has_string("mempool", "Mempool Server is running on port 8999")
     )
-    assert_matches(f"curl -L {ip('nginx')}:60845", "mempool - Bitcoin Explorer")
+    assert_matches(f"curl -L {get_ip('nginx')}:60845", "mempool - Bitcoin Explorer")
 
 @test("joinmarket")
 def _():
@@ -300,7 +309,7 @@ def _():
 def _():
     def get_ips(services):
         enabled = enabled_tests.intersection(services)
-        return " ".join(ip(service) for service in enabled)
+        return " ".join(get_ip(service) for service in enabled)
 
     def assert_reachable(src, dests):
         dest_ips = get_ips(dests)
@@ -323,7 +332,7 @@ def _():
     # netns addresses can not be bound to in the main netns.
     # This prevents processes in the main netns from impersonating nix-bitcoin services.
     assert_matches(
-        f"nc -l {ip('bitcoind')} 1080 2>&1 || true", "nc: Cannot assign requested address"
+        f"nc -l {get_ip('bitcoind')} 1080 2>&1 || true", "nc: Cannot assign requested address"
     )
 
     if "joinmarket" in enabled_tests:
@@ -371,8 +380,8 @@ def _():
         if file not in actual_files:
             raise Exception(f"Backup file '{file}' is missing.")
 
-    for test, file in files.items():
-        if test in enabled_tests:
+    for test_name, file in files.items():
+        if test_name in enabled_tests:
             assert_file_exists(file)
 
     assert_file_exists("secrets/lnd-wallet-password")
@@ -392,24 +401,24 @@ def _():
             # 'restart-bitcoind' test
             machine.wait_for_unit(unit)
             return True
-        else:
-            return False
 
-    def get_block_height(ip, port):
+        return False
+
+    def get_block_height(ip_addr, port):
         return (
             """echo '{"method": "blockchain.headers.subscribe", "id": 0}'"""
-            f" | nc {ip} {port} | head -1 | jq -M .result.height"
+            f" | nc {ip_addr} {port} | head -1 | jq -M .result.height"
         )
 
     num_blocks = test_data["num_blocks"]
 
     if enabled("electrs"):
         machine.wait_until_succeeds(log_has_string("electrs", "serving Electrum RPC"))
-        assert_full_match(get_block_height(ip('electrs'), 50001), f"{num_blocks}\n")
+        assert_full_match(get_block_height(get_ip('electrs'), 50001), f"{num_blocks}\n")
 
     if enabled("fulcrum"):
         machine.wait_until_succeeds(log_has_string("fulcrum", "listening for connections"))
-        assert_full_match(get_block_height(ip('fulcrum'), 50002), f"{num_blocks}\n")
+        assert_full_match(get_block_height(get_ip('fulcrum'), 50002), f"{num_blocks}\n")
 
     if enabled("clightning"):
         machine.wait_until_succeeds(
@@ -439,24 +448,24 @@ def _():
     if enabled("mempool"):
         assert_running("nginx")
         assert_full_match(
-            f"curl -fsS http://{ip('nginx')}:60845/api/v1/blocks/tip/height", str(num_blocks)
+            f"curl -fsS http://{get_ip('nginx')}:60845/api/v1/blocks/tip/height", str(num_blocks)
         )
 
 @test("trustedcoin")
 def _():
-    def expect_clightning_log(str):
-        machine.wait_until_succeeds(log_has_string("clightning", str))
+    def expect_clightning_log(value):
+        machine.wait_until_succeeds(log_has_string("clightning", value))
 
-    expect_clightning_log("plugin-trustedcoin[^^]\[0m\s+bitcoind RPC working")
-    expect_clightning_log("plugin-trustedcoin[^^]\[0m\s+estimatefees error: none of the esploras returned usable responses")
+    expect_clightning_log(r"plugin-trustedcoin[^^]\[0m\s+bitcoind RPC working")
+    expect_clightning_log(r"plugin-trustedcoin[^^]\[0m\s+estimatefees error: none of the esploras returned usable responses")
     if "regtest" in enabled_tests:
         num_blocks = test_data["num_blocks"]
-        expect_clightning_log(f"plugin-trustedcoin[^^]\[0m\s+returning block {num_blocks}")
+        expect_clightning_log(fr"plugin-trustedcoin[^^]\[0m\s+returning block {num_blocks}")
 
 
 if "netns-isolation" in enabled_tests:
-    def ip(name):
+    def get_ip(name):
         return test_data["netns"][name]["address"]
 else:
-    def ip(_):
+    def get_ip(_):
         return "127.0.0.1"
