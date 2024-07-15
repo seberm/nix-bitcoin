@@ -2,16 +2,16 @@
 
 buildGoModule rec {
   pname = "trustedcoin";
-  version = "0.7.0";
+  version = "0.8.0";
 
   src = fetchFromGitHub {
     owner = "nbd-wtf";
     repo = pname;
     rev = "v${version}";
-    hash = "sha256-uEJVxpNKInIroHf22GQs+0xzJCijtIo+6KOM2Yefu6o=";
+    hash = "sha256-Blha4Ba9ao/MCjfmG/V/VyDap4bfQAOCL1ZiPyt21ao=";
   };
 
-  vendorHash = "sha256-xvkK9rMQlXTnNyOMd79qxVSvhgPobcBk9cq4/YWbupY=";
+  vendorHash = "sha256-hKaSB8/pymA7o2LuUpLjLZYn37JzEBn3a/3vkGbhLdM=";
 
   subPackages = [ "." ];
 
