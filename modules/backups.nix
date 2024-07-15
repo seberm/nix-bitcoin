@@ -90,14 +90,17 @@ let
 in {
   inherit options;
 
+  # TODO-EXTERNAL:
+  # Remove this when https://github.com/NixOS/nixpkgs/pull/327386 has been merged.
+  imports = [ ./duplicity.nix ];
+  disabledModules = [ "services/backup/duplicity.nix" ];
+
   config = mkIf cfg.enable {
       environment.systemPackages = [ pkgs.duplicity ];
 
       services.duplicity = {
         enable = true;
-        extraFlags = [
-          "--include-filelist" "${filelist}"
-        ];
+        includeFileList = filelist;
         fullIfOlderThan = mkDefault "1M";
         targetUrl = cfg.destination;
         frequency = cfg.frequency;
